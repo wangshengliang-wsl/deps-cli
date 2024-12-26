@@ -17,6 +17,7 @@ npm install -g deps-cli
 ```bash
 deps-cli
 ```
+<video src="https://github.com/user-attachments/assets/b9d8c837-be2c-40de-beb9-a49233d649cf" autoplay alt="deps-cli" width="100%">
 
 ## Configuration
 ```ini
