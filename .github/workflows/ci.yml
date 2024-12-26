@@ -22,7 +22,7 @@ jobs:
           node-version: lts/*
           cache: pnpm
 
-      - run: pnpm i -g @Joruno-w/ni
+      - run: pnpm i -g @antfu/ni
       - run: nci
       - run: nr lint
       - run: nr typecheck
@@ -47,7 +47,7 @@ jobs:
           node-version: ${{ matrix.node }}
           cache: pnpm
 
-      - run: pnpm i -g @Joruno-w/ni
+      - run: pnpm i -g @antfu/ni
       - run: nci
       - run: nr build
       - run: nr test

@@ -48,23 +48,18 @@
     "prepare": "simple-git-hooks"
   },
   "devDependencies": {
+    "@antfu/eslint-config": "^3.11.2",
     "@types/node": "^22.10.1",
     "bumpp": "^9.8.1",
-    "eslint": "^9.15.0",
     "esno": "^4.8.0",
-    "lint-staged": "^15.2.10",
     "pnpm": "^9.14.3",
     "simple-git-hooks": "^2.11.1",
     "typescript": "^5.7.2",
     "unbuild": "^2.0.0",
     "vite": "^6.0.1",
-    "vitest": "^2.1.6"
-  },
-  "simple-git-hooks": {
-    "pre-commit": "pnpm lint-staged"
-  },
-  "lint-staged": {
-    "*": "eslint --fix"
+    "vitest": "^2.1.6",
+    "lint-staged": "^15.2.10",
+    "eslint": "^9.15.0"
   },
   "dependencies": {
     "@types/ini": "^4.1.1",
@@ -79,5 +74,11 @@
     "prompts": "^2.4.2",
     "sharp": "^0.33.5",
     "tesseract.js": "^5.1.1"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm lint-staged"
+  },
+  "lint-staged": {
+    "*": "eslint --fix"
   }
 }
