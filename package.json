@@ -1,7 +1,7 @@
 {
   "name": "deps-cli",
   "type": "module",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "packageManager": "pnpm@9.14.3",
   "description": "A CLI tool to manage dependencies in your project",
   "author": "Joruno-w <1710642275@qq.com>",
