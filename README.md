@@ -8,6 +8,9 @@
 
 A CLI tool to manage dependencies in your project
 
+## Requirements
+Node.js >= 20.0.0
+
 ## Features
 #### <p>📦&nbsp; input many packages to install</p> ####
 #### <p>🚀&nbsp; show your beetle development branches</p> ####
