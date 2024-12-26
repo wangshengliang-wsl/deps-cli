@@ -15,6 +15,9 @@
   "bugs": "https://github.com/Joruno-w/deps-cli/issues",
   "keywords": [],
   "sideEffects": false,
+  "bin": {
+    "deps-cli": "./dist/index.mjs"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
