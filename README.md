@@ -9,11 +9,11 @@
 A CLI tool to manage dependencies in your project
 
 ## Features
-> <p>📦&nbsp; input many packages to install</p>
-> <p>🚀&nbsp; show your beetle development branches</p>
-> <p>🚗&nbsp; auto install dependencies</p>
-> <p>🚑&nbsp; auto commit dependencies</p>
-> <p>🚒&nbsp; auto push dependencies</p>
+#### <p>📦&nbsp; input many packages to install</p> ####
+#### <p>🚀&nbsp; show your beetle development branches</p> ####
+#### <p>🚗&nbsp; auto install dependencies</p> ####
+#### <p>🚑&nbsp; auto commit dependencies</p> ####
+#### <p>🚒&nbsp; auto push dependencies</p> ####
 
 ## Install
 ```bash
