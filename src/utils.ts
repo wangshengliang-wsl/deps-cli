@@ -5,7 +5,6 @@ import sharp from 'sharp';
 import crypto from 'crypto';
 import fs from 'fs/promises';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import ini from 'ini';
 
 const customRcPath = process.env.NI_CONFIG_FILE
@@ -83,7 +82,7 @@ async function retry(fn: Function, maxAttempts = 3, delay = 1000) {
       throw new Error('未获取到 cookies');
     } catch (error) {
       lastError = error;
-      console.log(chalk.yellow(`第 ${attempt} 次尝试失败，${attempt < maxAttempts ? '等待重试' : '达到最大重试次数'}`));
+      console.log(chalk.yellow(`第 ${attempt} 次尝试登录失败，你特么是不是连VPN了，${attempt < maxAttempts ? '等待重试' : '达到最大重试次数'}`));
       if (attempt < maxAttempts) {
         await new Promise(resolve => setTimeout(resolve, delay));
       }
@@ -141,7 +140,7 @@ async function login() {
     };
   }
   try {
-    return await retry(attemptLogin, 5, 5000);
+    return await retry(attemptLogin, 3, 3000);
   } catch (error) {
     console.error('登录失败:', error);
     throw error;

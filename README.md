@@ -18,7 +18,7 @@ npm install -g deps-cli
 deps-cli
 ```
 
-![terminal](https://github.com/user-attachments/assets/fe31f675-2e35-46a8-93cf-3835497d92bc)
+<img src="https://github.com/user-attachments/assets/fe31f675-2e35-46a8-93cf-3835497d92bc" />
 
 ## Configuration
 ```ini
