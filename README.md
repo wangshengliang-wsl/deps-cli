@@ -18,6 +18,8 @@ npm install -g deps-cli
 deps-cli
 ```
 
+![terminal](https://github.com/user-attachments/assets/fe31f675-2e35-46a8-93cf-3835497d92bc)
+
 ## Configuration
 ```ini
 // ~/deps-cli.ini
@@ -36,10 +38,6 @@ data={}
 ## License
 
 [MIT](./LICENSE) License © 2024-PRESENT [Joruno-w](https://github.com/Joruno-w)
-
-## Demo
-
-<video src="https://github.com/user-attachments/assets/b9d8c837-be2c-40de-beb9-a49233d649cf" autoplay alt="deps-cli" width="100%">
 
 <!-- Badges -->
 
