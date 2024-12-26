@@ -1,0 +1,83 @@
+{
+  "name": "deps-cli",
+  "type": "module",
+  "version": "0.0.0",
+  "packageManager": "pnpm@9.14.3",
+  "description": "A CLI tool to manage dependencies in your project",
+  "author": "Joruno-w <1710642275@qq.com>",
+  "license": "MIT",
+  "funding": "https://github.com/sponsors/Joruno-w",
+  "homepage": "https://github.com/Joruno-w/deps-cli#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Joruno-w/deps-cli.git"
+  },
+  "bugs": "https://github.com/Joruno-w/deps-cli/issues",
+  "keywords": [],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./dist/*",
+        "./dist/index.d.ts"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "unbuild",
+    "dev": "unbuild --stub",
+    "lint": "eslint .",
+    "prepublishOnly": "nr build",
+    "release": "bumpp && pnpm publish",
+    "start": "esno src/index.ts",
+    "test": "vitest",
+    "typecheck": "tsc --noEmit",
+    "prepare": "simple-git-hooks"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "bumpp": "^9.8.1",
+    "eslint": "^9.15.0",
+    "esno": "^4.8.0",
+    "lint-staged": "^15.2.10",
+    "pnpm": "^9.14.3",
+    "simple-git-hooks": "^2.11.1",
+    "typescript": "^5.7.2",
+    "unbuild": "^2.0.0",
+    "vite": "^6.0.1",
+    "vitest": "^2.1.6"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm lint-staged"
+  },
+  "lint-staged": {
+    "*": "eslint --fix"
+  },
+  "dependencies": {
+    "@types/ini": "^4.1.1",
+    "@types/node-fetch": "^2.6.12",
+    "@types/prompts": "^2.4.9",
+    "@types/sharp": "^0.32.0",
+    "@types/tesseract.js": "^2.0.0",
+    "chalk": "^5.4.1",
+    "crypto": "^1.0.1",
+    "ini": "^5.0.0",
+    "node-fetch": "^3.3.2",
+    "prompts": "^2.4.2",
+    "sharp": "^0.33.5",
+    "tesseract.js": "^5.1.1"
+  }
+}
