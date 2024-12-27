@@ -28,8 +28,7 @@ npm install -g deps-cli
 deps-cli
 ```
 <video width="100%" controls>
-  <source src="https://github.com/user-attachments/assets/613439ef-86c1-4370-8d7a-f095c4d98bc1" type="video/mp4">
-  您的浏览器不支持视频标签
+  <source src="https://github.com/user-attachments/assets/613439ef-86c1-4370-8d7a-f095c4d98bc1" />
 </video>
 
 ## Configuration
