@@ -3,24 +3,9 @@ import { execSync } from 'node:child_process'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import chalk from 'chalk'
-import ini from 'ini'
 import prompts from 'prompts'
-import { getBranches, CONFIG_FILE } from './utils'
+import { getBranches, CONFIG_FILE, loadConfig, saveConfig } from './utils'
 
-// 配置文件管理
-async function loadConfig() {
-  try {
-    const content = await fs.readFile(CONFIG_FILE, 'utf-8')
-    return ini.parse(content)
-  }
-  catch {
-    return { auth: {}, projects: {}, presets: { data: '{}' } }
-  }
-}
-
-async function saveConfig(config: any) {
-  await fs.writeFile(CONFIG_FILE, ini.stringify(config))
-}
 
 async function loadRootDir() {
   const config = await loadConfig()

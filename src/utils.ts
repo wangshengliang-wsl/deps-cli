@@ -18,15 +18,18 @@ function getConfigPath() {
   const defaultRcPath = path.join(home || '~/', '.deps-cli.ini')
   return customRcPath || defaultRcPath
 }
+
 // 识别验证码
 async function recognizeQRCode() {
+  const config = await loadConfig();
+  const { loginHost } = config.hosts;
   const worker = await createWorker();
   try {
     await worker.reinitialize('eng');
     await worker.setParameters({
       tessedit_char_whitelist: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
     });
-    const response = await fetch(`https://zzsso.zhuanspirit.com/external/getValidateCode?key=${uuid}`);
+    const response = await fetch(`${loginHost}/external/getValidateCode?key=${uuid}`);
     const data: any = await response.json();
     const imageBase64 = data?.data;
 
@@ -104,6 +107,7 @@ async function login() {
     // 从配置文件获取凭证
     const config = await loadConfig();
     const { username, password } = config.auth || {};
+    const { loginHost } = config.hosts;
 
     if (!username || !password) {
       throw new Error('未配置用户名或密码，请先配置凭证');
@@ -126,7 +130,7 @@ async function login() {
     };
 
     // 3. 发送登录请求
-    const response = await fetch('https://zzsso.zhuanspirit.com/external/login', requestOptions);
+    const response = await fetch(`${loginHost}/external/login`, requestOptions);
     const result: any = await response.json();
     const cookies = response.headers.get('set-cookie');
 
@@ -155,6 +159,10 @@ async function loadConfig() {
     return {
       auth: config.auth || {},
       projects: config.projects || { root: '' },
+      hosts: config.hosts || {
+        loginHost: '',
+        beetleHost: ''
+      },
       presets: config.presets || { data: '{}' }
     };
   } catch {
@@ -162,6 +170,10 @@ async function loadConfig() {
     return {
       auth: {},
       projects: { root: '' },
+      hosts: {
+        loginHost: '',
+        beetleHost: ''
+      },
       presets: { data: '{}' }
     };
   }
@@ -220,6 +232,8 @@ interface Branch {
 }
 
 async function getBranches(): Promise<Branch[]> {
+  const config = await loadConfig();
+  const { beetleHost } = config.hosts;
   const params = {
     p_pageIndex: 1,
     projectId: 0,
@@ -227,7 +241,7 @@ async function getBranches(): Promise<Branch[]> {
   };
   try {
     const branches = await request(
-      `https://beetle.zhuanspirit.com/apiBeetle/project/branchingmyself?${toParams(params)}`,
+      `${beetleHost}/apiBeetle/project/branchingmyself?${toParams(params)}`,
       { method: 'GET' }
     );
     return branches.datalist.filter((b: any) => b.engineType == 'fe')
@@ -235,19 +249,6 @@ async function getBranches(): Promise<Branch[]> {
     console.log(chalk.red(`获取分支信息失败: 请检查网络是否正常，别特么连VPN了`));
     throw error;
   }
-}
-
-// 修改 updateCdnUrls 函数使用新的请求函数
-async function updateCdnUrls(urls: string[]) {
-  return await request('https://order.zhuanspirit.com/api/apply_order/CdnUrls', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: new URLSearchParams({
-      urls: urls.join('\n'),
-    }),
-  });
 }
 
 function toParams(params: Record<string, any>): string {
@@ -268,7 +269,6 @@ export {
   loadCookies,
   request,
   getBranches,
-  updateCdnUrls,
   toParams,
   generateUUID,
   loadConfig,

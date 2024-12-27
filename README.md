@@ -31,17 +31,21 @@ deps-cli
 
 ## Configuration
 ```ini
-// ~/deps-cli.ini
+# ~/deps-cli.ini
 [auth]
-username=xxx
-password=xxx
-cookies="xxx"
+username=xxx #登录用户名
+password=xxx #登录密码
+cookies="xxx" #登录cookies
 
 [projects]
-root=xxx
+root=xxx #本地项目根目录
+
+[hosts] # host配置，敏感信息请自行配置
+loginHost=xxx #登录host
+beetleHost=xxx #beetle host
 
 [presets]
-data={}
+data={} #预设数据
 ```
 
 ## License
