@@ -9,7 +9,8 @@
 A CLI tool to manage dependencies in your project
 
 ## Requirements
-Node.js >= 20.0.0
+- Node.js >= 20.0.0
+- 配置host
 
 ## Features
 #### <p>📦&nbsp; input many packages to install</p> ####
@@ -40,7 +41,7 @@ cookies="xxx" #登录cookies
 root=xxx #本地项目根目录
 
 [hosts] # host配置，敏感信息请自行配置
-loginHost=xxx #登录host
+loginHost=xxx #sso登录认证 host
 beetleHost=xxx #beetle host
 
 [presets]
