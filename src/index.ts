@@ -5,17 +5,7 @@ import path from 'node:path'
 import chalk from 'chalk'
 import ini from 'ini'
 import prompts from 'prompts'
-import { getBranches } from './utils'
-
-const customRcPath = process.env.NI_CONFIG_FILE
-
-const home = process.platform === 'win32'
-  ? process.env.USERPROFILE
-  : process.env.HOME
-
-const defaultRcPath = path.join(home || '~/', '.deps-cli.ini')
-
-const CONFIG_FILE = customRcPath || defaultRcPath
+import { getBranches, CONFIG_FILE } from './utils'
 
 // 配置文件管理
 async function loadConfig() {
@@ -54,17 +44,6 @@ async function savePreset(name: string, presetConfig: any) {
   presets[name] = presetConfig
   config.presets.data = JSON.stringify(presets)
   await saveConfig(config)
-}
-
-async function saveCookies(cookies: string) {
-  const config = await loadConfig()
-  config.auth.cookies = cookies
-  await saveConfig(config)
-}
-
-async function loadCookies() {
-  const config = await loadConfig()
-  return config.auth.cookies
 }
 
 // 添加用户凭证相关函数
@@ -639,8 +618,8 @@ async function main() {
       }
     }
   }
-  catch (error) {
-    console.error(chalk.red('执行出错：'), error)
+  catch (error: any) {
+    console.log(chalk.red(`执行出错：${error.message}`))
     process.exit(1)
   }
 }

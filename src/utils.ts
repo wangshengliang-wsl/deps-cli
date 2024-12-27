@@ -7,17 +7,17 @@ import fs from 'fs/promises';
 import path from 'path';
 import ini from 'ini';
 
-const customRcPath = process.env.NI_CONFIG_FILE
-
-const home = process.platform === 'win32'
-  ? process.env.USERPROFILE
-  : process.env.HOME
-
-const defaultRcPath = path.join(home || '~/', '.deps-cli.ini')
-
-const CONFIG_FILE = customRcPath || defaultRcPath
-
 const uuid = generateUUID()
+const CONFIG_FILE = getConfigPath()
+
+function getConfigPath() {
+  const customRcPath = process.env.NI_CONFIG_FILE
+  const home = process.platform === 'win32'
+    ? process.env.USERPROFILE
+    : process.env.HOME
+  const defaultRcPath = path.join(home || '~/', '.deps-cli.ini')
+  return customRcPath || defaultRcPath
+}
 // 识别验证码
 async function recognizeQRCode() {
   const worker = await createWorker();
@@ -72,7 +72,7 @@ function generateUUID() {
 // 添加轮询工具函数
 async function retry(fn: Function, maxAttempts = 3, delay = 1000) {
   let lastError;
-  
+
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
       const result = await fn();
@@ -82,13 +82,13 @@ async function retry(fn: Function, maxAttempts = 3, delay = 1000) {
       throw new Error('未获取到 cookies');
     } catch (error) {
       lastError = error;
-      console.log(chalk.yellow(`第 ${attempt} 次尝试登录失败，你特么是不是连VPN了，${attempt < maxAttempts ? '等待重试' : '达到最大重试次数'}`));
+      console.log(chalk.yellow(`第 ${attempt} 次尝试登录失败，${attempt < maxAttempts ? '等待重试' : '达到最大重试次数'}`));
       if (attempt < maxAttempts) {
         await new Promise(resolve => setTimeout(resolve, delay));
       }
     }
   }
-  
+
   throw lastError;
 }
 
@@ -104,7 +104,7 @@ async function login() {
     // 从配置文件获取凭证
     const config = await loadConfig();
     const { username, password } = config.auth || {};
-    
+
     if (!username || !password) {
       throw new Error('未配置用户名或密码，请先配置凭证');
     }
@@ -142,8 +142,7 @@ async function login() {
   try {
     return await retry(attemptLogin, 3, 3000);
   } catch (error) {
-    console.error('登录失败:', error);
-    throw error;
+    console.log(chalk.red(`登录失败: 请检查用户名密码是否正确，网络是否正常，别特么连VPN了`));
   }
 }
 
@@ -202,7 +201,8 @@ async function request(url: string, options: RequestInit = {}) {
     response = await fetch(url, requestOptions).then(res => res.json())
   } catch (error) {
     // 使用轮询重试登录
-    const { cookies } = await retry(login, 3, 2000);
+    const { cookies } = await login()
+    if (!cookies) return
     await saveCookies(cookies);
     // 使用新的 cookies 重试请求
     requestOptions.headers['Cookie'] = cookies;
@@ -232,7 +232,7 @@ async function getBranches(): Promise<Branch[]> {
     );
     return branches.datalist.filter((b: any) => b.engineType == 'fe')
   } catch (error) {
-    console.error('获取分支信息失败:', error);
+    console.log(chalk.red(`获取分支信息失败: 请检查网络是否正常，别特么连VPN了`));
     throw error;
   }
 }
@@ -260,6 +260,8 @@ function toParams(params: Record<string, any>): string {
 
 
 export {
+  uuid,
+  CONFIG_FILE,
   recognizeQRCode,
   login,
   saveCookies,
@@ -269,7 +271,6 @@ export {
   updateCdnUrls,
   toParams,
   generateUUID,
-  uuid,
   loadConfig,
   saveConfig,
 }
