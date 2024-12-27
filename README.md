@@ -27,9 +27,6 @@ npm install -g deps-cli
 ```bash
 deps-cli
 ```
-<video width="100%" controls>
-  <source src="https://github.com/user-attachments/assets/613439ef-86c1-4370-8d7a-f095c4d98bc1" />
-</video>
 
 ## Configuration
 ```ini
@@ -53,6 +50,8 @@ data={} #预设数据
 ## License
 
 [MIT](./LICENSE) License © 2024-PRESENT [Joruno-w](https://github.com/Joruno-w)
+
+<video src="https://github.com/user-attachments/assets/613439ef-86c1-4370-8d7a-f095c4d98bc1" />
 
 <!-- Badges -->
 
