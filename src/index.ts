@@ -8,6 +8,7 @@ import { program } from 'commander'
 import { getBranches, CONFIG_FILE, loadConfig, saveConfig } from './utils'
 import packageJson from '../package.json'
 
+
 // 添加 commander 配置
 program
   .version(packageJson.version, '-v, --version', '显示版本号')
