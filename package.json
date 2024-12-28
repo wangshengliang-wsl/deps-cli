@@ -77,7 +77,8 @@
     "node-fetch": "^3.3.2",
     "prompts": "^2.4.2",
     "sharp": "^0.33.5",
-    "tesseract.js": "^5.1.1"
+    "tesseract.js": "^5.1.1",
+    "commander": "^11.0.0"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm lint-staged"

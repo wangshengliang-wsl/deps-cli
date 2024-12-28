@@ -4,8 +4,27 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import chalk from 'chalk'
 import prompts from 'prompts'
+import { program } from 'commander'
 import { getBranches, CONFIG_FILE, loadConfig, saveConfig } from './utils'
 
+// 添加 commander 配置
+program
+  .version('1.0.0', '-v, --version', '显示版本号')
+  .description('一个用于批量更新依赖的CLI工具')
+  .helpOption('-h, --help', '显示帮助信息')
+  .addHelpText('after', `
+示例:
+  $ deps              运行交互式更新依赖向导
+  $ deps-cli -v           显示版本号
+  $ deps-cli -h           显示帮助信息
+`)
+
+program.parse(process.argv)
+
+// 如果没有其他参数,执行主程序
+if (!process.argv.slice(2).length) {
+  main().catch(console.error)
+}
 
 async function loadRootDir() {
   const config = await loadConfig()
@@ -651,5 +670,3 @@ async function main() {
     process.exit(1)
   }
 }
-
-main().catch(console.error)
