@@ -587,11 +587,6 @@ async function main() {
           description: `${branch.createor} - ${branch.workItem.split('@%@').at(-1)}`,
         })) || [],
         min: 1,
-        instructions: `
-    ↑/↓: 选择当前分支
-    ←/→/[space]: 切换选择状态
-    a: 全选所有分支
-    enter/return: 完成选择`
       })
 
       if (!selectedBranches) {
