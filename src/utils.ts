@@ -146,7 +146,7 @@ async function login() {
   try {
     return await retry(attemptLogin, 3, 3000);
   } catch (error) {
-    console.log(chalk.red(`登录失败: 请检查用户名密码是否正确，网络是否正常，别特么连VPN了`));
+    console.log(chalk.red(`登录失败: 请检查用户名密码是否正确，网络是否正常`));
   }
 }
 
@@ -246,7 +246,7 @@ async function getBranches(): Promise<Branch[]> {
     );
     return branches.datalist.filter((b: any) => b.engineType == 'fe')
   } catch (error) {
-    console.log(chalk.red(`获取分支信息失败: 请检查网络是否正常，别特么连VPN了`));
+    console.log(chalk.red(`获取分支信息失败: 请检查网络是否正常`));
     throw error;
   }
 }

@@ -167,11 +167,50 @@ async function getProjectPath(projectName: string) {
   return projectPath
 }
 
+// 添加检查和切换分支的函数
+async function checkAndSwitchBranch(projectPath: string, targetBranch: string) {
+  try {
+    // 获取当前分支
+    const currentBranch = execSync('git branch --show-current', {
+      cwd: projectPath,
+      encoding: 'utf8',
+    }).trim();
+
+    if (currentBranch !== targetBranch) {
+      const { shouldSwitch } = await prompts({
+        type: 'confirm',
+        name: 'shouldSwitch',
+        message: `本地分支(${chalk.greenBright(currentBranch)})和选择分支(${chalk.greenBright(targetBranch)})不一致，是否切换？`,
+        initial: true,
+      });
+
+      if (shouldSwitch) {
+        execSync(`git checkout ${targetBranch}`, {
+          cwd: projectPath,
+          stdio: 'pipe',
+        });
+        return true;
+      }
+      return false;
+    }
+    return true;
+  } catch (error: any) {
+    console.log(chalk.red(`获取或切换分支失败: ${error.message}`));
+    return false;
+  }
+}
+
 // git操作和依赖安装函数
-async function updateLocalProject(projectPath: string, statusManager: any, packages: any[]) {
+async function updateLocalProject(projectPath: string, statusManager: any, packages: any[], branch: string) {
   const projectName = path.basename(projectPath)
   try {
     statusManager.initProject(projectName)
+
+    // 检查并切换分支
+    const branchSwitched = await checkAndSwitchBranch(projectPath, branch);
+    if (!branchSwitched) {
+      throw new Error('分支切换失败或被用户取消');
+    }
 
     // Git Pull
     statusManager.updateProject(projectName, '处理中', '执行 git pull')
@@ -300,7 +339,7 @@ async function updateLocalProject(projectPath: string, statusManager: any, packa
     catch (error: any) {
       // 如果有错误输出，将其添加到错误信息中
       const errorOutput = error.stderr ? `\n${error.stderr.toString()}` : ''
-      throw new Error(`操作失败: ${error.message}${errorOutput}`)
+      throw new Error(`操作失败`)
     }
   }
   catch (error: any) {
@@ -583,7 +622,6 @@ async function main() {
     }
 
     // 执行更新操作
-    console.log(chalk.blue('\n开始更新包版本...'))
     const statusManager = new ProjectStatus()
     for (const branch of config?.branches) {
       try {
@@ -591,7 +629,7 @@ async function main() {
         const projectName = branch.split('-')[0]
         try {
           const projectPath = await getProjectPath(projectName)
-          await updateLocalProject(projectPath, statusManager, config.packages)
+          await updateLocalProject(projectPath, statusManager, config.packages, branch)
         }
         catch (error) {
           statusManager.initProject(projectName)
