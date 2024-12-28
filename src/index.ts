@@ -57,7 +57,7 @@ process.on('SIGINT', () => {
 })
 
 // 验证单个包名和版本
-function validatePackage(name: string, version:string) {
+function validatePackage(name: string, version: string) {
   if (!name)
     return '请输入包名'
   if (!version)
@@ -424,7 +424,7 @@ class ProjectStatus {
   }>;
   private displayedLines: number;
   private maxDetailsToShow: number;
-  
+
   constructor() {
     this.projects = new Map()
     this.displayedLines = 0
@@ -587,6 +587,11 @@ async function main() {
           description: `${branch.createor} - ${branch.workItem.split('@%@').at(-1)}`,
         })) || [],
         min: 1,
+        instructions: `
+    ↑/↓: 选择当前分支
+    ←/→/[space]: 切换选择状态
+    a: 全选所有分支
+    enter/return: 完成选择`,
       })
 
       if (!selectedBranches) {
