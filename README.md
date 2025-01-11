@@ -26,7 +26,7 @@ npm install -g deps-cli
 
 ## Usage
 ```bash
-deps-cli
+deps
 ```
 
 ## Configuration
