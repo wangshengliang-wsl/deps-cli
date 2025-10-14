@@ -9,6 +9,10 @@ import ini from 'ini';
 
 const uuid = generateUUID()
 const CONFIG_FILE = getConfigPath()
+const config = await loadConfig();
+const { hosts, auth } = config;
+const { username, password } = auth;
+const { loginHost, beetleHost, qaCodeHost } = hosts;
 
 function getConfigPath() {
   const customRcPath = process.env.NI_CONFIG_FILE
@@ -21,8 +25,6 @@ function getConfigPath() {
 
 // 识别验证码
 async function recognizeQRCode() {
-  const config = await loadConfig();
-  const { loginHost } = config.hosts;
   const worker = await createWorker();
   try {
     await worker.reinitialize('eng');
@@ -105,10 +107,6 @@ async function login() {
     }
 
     // 从配置文件获取凭证
-    const config = await loadConfig();
-    const { username, password } = config.auth || {};
-    const { loginHost } = config.hosts;
-
     if (!username || !password) {
       throw new Error('未配置用户名或密码，请先配置凭证');
     }
@@ -165,6 +163,7 @@ async function loadConfig() {
       },
       presets: config.presets || { data: '{}' }
     };
+    
   } catch {
     // 返回默认配置
     return {
@@ -213,14 +212,14 @@ async function request(url: string, options: RequestInit = {}) {
     response = await fetch(url, requestOptions).then(res => res.json())
   } catch (error) {
     // 使用轮询重试登录
-    const { cookies } = await login()
+    const { cookies } = await login() || {}
     if (!cookies) return
     await saveCookies(cookies);
     // 使用新的 cookies 重试请求
     requestOptions.headers['Cookie'] = cookies;
     response = await fetch(url, requestOptions).then(res => res.json());
   }
-  return response?.respData || {}
+  return response?.respData || response || {}
 }
 
 // 修改 getBranches 函数使用新的请求函数
@@ -231,11 +230,89 @@ interface Branch {
   workItem: string;
 }
 
-async function getBranches(): Promise<Branch[]> {
-  const config = await loadConfig();
-  const { beetleHost } = config.hosts;
+// 根据工程名称获取工程 id
+async function getProjectId(enginename: string) {
   const params = {
     p_pageIndex: 1,
+    enginename,
+    sortkey: '',
+    sortorder: '',
+    groupname: '',
+    isOpenOwnerSelect: false,
+    projectType: ''
+  }
+  const response = await request(`${beetleHost}/apiBeetle/project/showprojectNew?${toParams(params)}`);
+  return response?.datalist?.[0]?.id || '';
+}
+
+// 根据工程 id 获取分支 id
+async function getBranchId(keyword: string, projectId: number) {
+  const params = {
+    keyword,
+    projectId,
+    pageIndex: 1,
+    pageSize: 100,
+    projectType: 'fe',
+    version: '',
+    state: '',
+  }
+  const response = await request(`${beetleHost}/apiBeetle/branchManage/getBranchListsByPageNew?${toParams(params)}`);
+  return response?.datalist?.[0]?.id || ''
+}
+
+// 根据分支 id 获取 subTaskId
+async function getSubTaskId(branchId: string) {
+  const params = {
+    type: 'dev',
+    branch: branchId,
+    pageIndex: 1,
+    changetab: 'tab_1'
+  }
+  const response = await request(`${beetleHost}/apiBeetle/deploy/list?${toParams(params)}`);
+  return response?.datalist?.[0]?.id || ''
+}
+
+// 获取改变的文件列表
+async function getChangedFiles({
+  branchName
+}: {
+  branchName: string
+}) {
+  const clusterName = branchName.split('-')[0]
+  const params = {
+    clusterName,
+    branchName,
+    groupName: 'zz-fe-u'
+  }
+  const response = await request(`${qaCodeHost}/getChangeFileListV3?${toParams(params)}`);
+  return response?.result.map((item: any) => item.path) || []
+}
+
+// 获取改变的文件内容
+async function getDiffsForAllForFeWithContext({
+  branchName,
+  fileName
+}: {
+  branchName: string
+  fileName: string
+}) {
+  const clusterName = branchName.split('-')[0]
+  const params = {
+    clusterName,
+    fileName,
+    commitHash2: branchName,
+    commitHash1:'master',
+    groupName: 'zz-fe-u'
+  }
+  const response = await request(`${qaCodeHost}/getDiffsForAllForFeWithContext?${toParams(params)}`);
+  return response?.result?.[fileName] || []
+}
+
+// 获取分支列表
+async function getBranches(): Promise<Branch[]> {
+  const params = {
+    p_pageIndex: 1,
+    p_pageSize: 100,
     projectId: 0,
     branchState: 1,
   };
@@ -244,7 +321,7 @@ async function getBranches(): Promise<Branch[]> {
       `${beetleHost}/apiBeetle/project/branchingmyself?${toParams(params)}`,
       { method: 'GET' }
     );
-    return branches.datalist.filter((b: any) => b.engineType == 'fe')
+    return branches?.datalist?.filter((b: any) => b.engineType == 'fe') || []
   } catch (error) {
     console.log(chalk.red(`获取分支信息失败: 请检查网络是否正常`));
     throw error;
@@ -260,6 +337,27 @@ function toParams(params: Record<string, any>): string {
 }
 
 
+// 测试函数
+async function main(branchName?: string) {
+  // 如果没有，就获取分支列表中的第一个分支名称
+  if(!branchName){
+    branchName = (await getBranches())[0].branchName
+  }
+  const clusterName = branchName.split('-')[0]
+  const projectId = await getProjectId(clusterName);
+  console.log(projectId);
+  const branchId = await getBranchId(branchName, projectId);
+  console.log(branchId);
+  const subTaskId = await getSubTaskId(branchId);
+  console.log(subTaskId);
+  const changedFiles = await getChangedFiles({ branchName });
+  console.log(changedFiles);
+  const res = (await Promise.all(changedFiles.map(async (fileName: string) => await getDiffsForAllForFeWithContext({ branchName, fileName })))).filter(diff => diff?.length)
+  console.log(res);
+}
+
+main()
+
 export {
   uuid,
   CONFIG_FILE,
@@ -273,4 +371,9 @@ export {
   generateUUID,
   loadConfig,
   saveConfig,
+  getProjectId,
+  getBranchId,
+  getSubTaskId,
+  getChangedFiles,
+  getDiffsForAllForFeWithContext
 }
