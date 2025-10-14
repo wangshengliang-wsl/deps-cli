@@ -43,6 +43,7 @@ root=xxx #本地项目根目录
 [hosts] # host配置，敏感信息请自行配置
 loginHost=xxx #sso登录认证 host
 beetleHost=xxx #beetle host
+qaCodeHost=xxx #qacode host
 
 [presets]
 data={} #预设数据
