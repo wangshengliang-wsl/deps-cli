@@ -28,47 +28,47 @@ if (!process.argv.slice(2).length) {
   main().catch(console.error)
 }
 
-async function loadRootDir() {
-  const config = await loadConfig()
+function loadRootDir() {
+  const config = loadConfig()
   return config.projects.root
 }
 
-async function saveRootDir(rootDir: string) {
-  const config = await loadConfig()
+function saveRootDir(rootDir: string) {
+  const config = loadConfig()
   config.projects.root = rootDir
-  await saveConfig(config)
+  saveConfig(config)
 }
 
-async function loadPresets() {
-  const config = await loadConfig()
+function loadPresets() {
+  const config = loadConfig()
   return JSON.parse(config.presets.data || '{}')
 }
 
-async function savePreset(name: string, presetConfig: any) {
-  const config = await loadConfig()
+function savePreset(name: string, presetConfig: any) {
+  const config = loadConfig()
   const presets = JSON.parse(config.presets.data || '{}')
   presets[name] = presetConfig
   config.presets.data = JSON.stringify(presets)
-  await saveConfig(config)
+  saveConfig(config)
 }
 
 // 添加用户凭证相关函数
-async function loadCredentials() {
-  const config = await loadConfig()
+function loadCredentials() {
+  const config = loadConfig()
   return {
     username: config.auth?.username,
     password: config.auth?.password,
   }
 }
 
-async function saveCredentials(username: string, password: string) {
-  const config = await loadConfig()
+function saveCredentials(username: string, password: string) {
+  const config = loadConfig()
   config.auth = {
     ...config.auth,
     username,
     password,
   }
-  await saveConfig(config)
+  saveConfig(config)
 }
 
 // 处理 ctrl+c
@@ -152,7 +152,7 @@ async function inputPackages(initialPackages = []) {
 
 // 项目目录操作函数
 async function getRootDir() {
-  let rootDir = await loadRootDir()
+  let rootDir = loadRootDir()
 
   if (!rootDir) {
     const { inputPath } = await prompts({
@@ -167,7 +167,7 @@ async function getRootDir() {
     }
 
     rootDir = path.resolve(inputPath)
-    await saveRootDir(rootDir)
+    saveRootDir(rootDir)
   }
 
   return rootDir
@@ -575,7 +575,7 @@ async function main() {
       await saveCredentials(username, password)
     }
 
-    const presets = await loadPresets()
+    const presets = loadPresets()
     const hasPresets = Object.keys(presets).length > 0
     let config: any = {}
 
@@ -640,7 +640,7 @@ async function main() {
           })
 
           if (presetName) {
-            await savePreset(presetName, config)
+            savePreset(presetName, config)
             console.log(chalk.green(`预设配置 "${presetName}" 已保存`))
           }
         }

@@ -3,13 +3,13 @@ import fetch from 'node-fetch'
 import { createWorker } from 'tesseract.js';
 import sharp from 'sharp';
 import crypto from 'crypto';
-import fs from 'fs/promises';
+import fs from 'fs';
 import path from 'path';
 import ini from 'ini';
 
 const uuid = generateUUID()
 const CONFIG_FILE = getConfigPath()
-const config = await loadConfig();
+const config = loadConfig();
 const { hosts, auth } = config;
 const { username, password } = auth;
 const { loginHost, beetleHost, qaCodeHost } = hosts;
@@ -149,9 +149,9 @@ async function login() {
 }
 
 // 配置文件管理
-async function loadConfig() {
+function loadConfig() {
   try {
-    const content = await fs.readFile(CONFIG_FILE, 'utf-8');
+    const content = fs.readFileSync(CONFIG_FILE, 'utf-8');
     const config = ini.parse(content);
     // 确保基本结构存在
     return {
@@ -178,26 +178,26 @@ async function loadConfig() {
   }
 }
 
-async function saveConfig(config: any) {
-  await fs.writeFile(CONFIG_FILE, ini.stringify(config));
+function saveConfig(config: any) {
+ fs.writeFileSync(CONFIG_FILE, ini.stringify(config));
 }
 
 // cookie 管理相关函数
-async function saveCookies(cookies: string) {
-  const config = await loadConfig();
+function saveCookies(cookies: string) {
+  const config = loadConfig();
   config.auth.cookies = cookies;
-  await saveConfig(config);
+  saveConfig(config);
 }
 
-async function loadCookies() {
-  const config = await loadConfig();
+function loadCookies() {
+  const config = loadConfig();
   return config.auth.cookies;
 }
 
 // 修改 request 函数的重试逻辑
 async function request(url: string, options: RequestInit = {}) {
   // 尝试加载存储的 cookies
-  let cookies = await loadCookies();
+  let cookies = loadCookies();
   // 合并默认配置
   const requestOptions: any = {
     headers: {
@@ -214,7 +214,7 @@ async function request(url: string, options: RequestInit = {}) {
     // 使用轮询重试登录
     const { cookies } = await login() || {}
     if (!cookies) return
-    await saveCookies(cookies);
+    saveCookies(cookies);
     // 使用新的 cookies 重试请求
     requestOptions.headers['Cookie'] = cookies;
     response = await fetch(url, requestOptions).then(res => res.json());
