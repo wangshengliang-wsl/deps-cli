@@ -84,13 +84,13 @@ function validatePackage(name: string, version: string) {
   if (!version)
     return '请输入版本号'
   const nameRegex = /^@?[a-z0-9-]+\/[a-z0-9-]+$/i
-  const versionRegex = /^\d+\.\d+\.\d+$/
+  const versionRegex = /^\d+\.\d+\.\d+-(beta|alpha|rc)\.\d+$/
 
   if (!nameRegex.test(name)) {
     return '包名格式错误，正确格式如：@zz-common/zz-ui'
   }
   if (!versionRegex.test(version)) {
-    return '版本号格式错误，正确格式如：6.3.56'
+    return '版本号格式错误'
   }
   return true
 }
