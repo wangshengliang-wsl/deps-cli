@@ -285,7 +285,7 @@ async function getChangedFiles({
     groupName: 'zz-fe-u'
   }
   const response = await request(`${qaCodeHost}/getChangeFileListV3?${toParams(params)}`);
-  return response?.result.map((item: any) => item.path) || []
+  return response?.result?.map((item: any) => item.path) || []
 }
 
 // 获取改变的文件内容
@@ -356,7 +356,7 @@ async function main(branchName?: string) {
   console.log(res);
 }
 
-main()
+// main()
 
 export {
   uuid,
